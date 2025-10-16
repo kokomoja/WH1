@@ -2,7 +2,7 @@ from PyQt5.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QLabel, QPushButt
 from PyQt5.QtGui import QFont
 from PyQt5.QtCore import QCoreApplication
 from main import MainForm
-from wh1_report import ReportWindow
+from wh1_report import WH1ReportForm
 
 class MenuWindow(QMainWindow):
     def __init__(self, username: str):
@@ -38,28 +38,33 @@ class MenuWindow(QMainWindow):
         btn_logout.clicked.connect(self.logout)
         layout.addWidget(btn_logout)
 
-        # ตัวแปรหน้าต่าง
+        # เก็บ reference กัน GC และใช้ reuse
         self.main_window = None
         self.report_window = None
 
+    def bring_to_front(self, w):
+        # ดันหน้าต่างขึ้นหน้าและโฟกัส
+        w.show()
+        w.raise_()
+        w.activateWindow()
+
     def open_main_form(self):
-        """เปิดฟอร์ม CRUD เป็นหน้าต่างแยก"""
-        self.main_window = MainForm()
-        self.main_window.show()
+        """เปิดฟอร์ม CRUD เป็นหน้าต่างแยก โดยไม่ปิด/ซ่อนเมนู"""
+        if self.main_window is None:
+            self.main_window = MainForm()
+        self.bring_to_front(self.main_window)
 
     def open_report(self):
-        """เปิดหน้ารายงาน"""
+        """เปิดหน้ารายงานเป็นหน้าต่างแยก โดยไม่ปิด/ซ่อนเมนู"""
         if self.report_window is None:
-            self.report_window = ReportWindow(self)
+           self.report_window = WH1ReportForm()  # ไม่ส่ง parent
         self.report_window.show()
-        self.report_window.raise_()
 
     def logout(self):
-        """ปุ่มออกจากระบบ"""
         reply = QMessageBox.question(
             self, "ยืนยันการออกจากระบบ",
             "คุณต้องการออกจากระบบหรือไม่?",
             QMessageBox.Yes | QMessageBox.No, QMessageBox.No
         )
         if reply == QMessageBox.Yes:
-            QCoreApplication.quit()  # ✅ ปิดทั้งโปรแกรมทั้งหมด
+            QCoreApplication.quit()

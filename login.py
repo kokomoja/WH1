@@ -17,6 +17,9 @@ class LoginDialog(QDialog):
         self.ed_pass.setEchoMode(QLineEdit.Password)
         layout.addWidget(self.ed_pass)
 
+        self.ed_user.setText("1")
+        self.ed_pass.setText("1")
+        
         self.cb_show = QCheckBox("แสดงรหัสผ่าน")
         self.cb_show.stateChanged.connect(self.toggle_password)
         layout.addWidget(self.cb_show)

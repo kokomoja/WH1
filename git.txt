@@ -1,9 +1,9 @@
 cd C:\ProjectPCT\WH1_Project
 git init
 git remote remove origin
-git remote add origin https://github.com/kokomoja/PCT_OT_REQUEST.git
+git remote add origin https://github.com/kokomoja/WH1.git
 git add .
-git commit -m "commit for OT Request App"
+git commit -m "commit for WH1"
 git branch -M main
 git push -u origin main --force
 

@@ -1,13 +1,21 @@
 from PyQt5.QtWidgets import (
-    QWidget, QVBoxLayout, QFormLayout, QHBoxLayout, QLineEdit,
-    QDateEdit, QTimeEdit, QTextEdit, QPushButton, QTableWidget,
-    QTableWidgetItem, QMessageBox, QLabel, QComboBox, QInputDialog, QSizePolicy
+    QWidget, QVBoxLayout, QFormLayout, QHBoxLayout, QLineEdit, QSpacerItem, 
+    QDateEdit, QTimeEdit, QPushButton, QTableWidget, QTableWidgetItem,
+    QMessageBox, QLabel, QComboBox, QSizePolicy, QInputDialog
 )
 from PyQt5.QtCore import QDate, QTime, Qt
-from PyQt5.QtGui import QFont
+from PyQt5.QtGui import QFont 
 from db import (
-    list_records, create_record, update_record, delete_record,
-    create_item_record, list_item_records, get_products, add_product
+    list_headers,
+    list_records,
+    list_item_records,
+    create_record,
+    create_item_record,
+    update_record,
+    delete_record,
+    delete_items_by_header,
+    get_products,
+    add_product
 )
 from utils import setup_dateedit, setup_timeedit, confirm_dialog
 
@@ -19,7 +27,6 @@ class MainForm(QWidget):
         self.resize(1150, 800)
         self.current_id = None
 
-        # ฟอนต์หลัก
         self.setFont(QFont("TH Sarabun New", 14))
 
         # === กล่องหลัก (แนวตั้ง) ===
@@ -28,18 +35,12 @@ class MainForm(QWidget):
 
         # === แถวที่ 1: ID ===
         row1 = QHBoxLayout()
+        row1.setAlignment(Qt.AlignLeft)    
         lbl_id = QLabel("Sequence (ID):")
         self.ed_id = QLineEdit()
         self.ed_id.setReadOnly(True)
         self.ed_id.setFixedWidth(120)
         self.ed_id.setStyleSheet("background-color:#f0f0f0; color:gray;")
-        row1.addWidget(lbl_id)
-        row1.addWidget(self.ed_id)
-        row1.addStretch()  # ✅ ป้องกันการขยาย
-        root.addLayout(row1)
-
-        # === แถวที่ 2: วันที่ / ชุดเรือ / ชื่อเรือ ===
-        row2 = QHBoxLayout()
         self.d_date = setup_dateedit(QDateEdit(calendarPopup=True))
         self.d_date.setDate(QDate.currentDate())
         self.d_date.setFixedWidth(150)
@@ -49,45 +50,49 @@ class MainForm(QWidget):
 
         self.ed_lighter = QLineEdit()
         self.ed_lighter.setFixedWidth(200)
-
-        row2.addWidget(QLabel("วันที่:"))
-        row2.addWidget(self.d_date)
-        row2.addSpacing(30)
-        row2.addWidget(QLabel("ชุดเรือ:"))
-        row2.addWidget(self.ed_sm)
-        row2.addSpacing(30)
-        row2.addWidget(QLabel("ชื่อเรือ:"))
-        row2.addWidget(self.ed_lighter)
-        row2.addStretch()
-        root.addLayout(row2)
-
+        
+        
+        row1.addWidget(lbl_id)
+        row1.addWidget(self.ed_id)
+        row1.addWidget(QLabel("วันที่:"))
+        row1.addWidget(self.d_date)
+        row1.addWidget(QLabel("ชุดเรือ:"))
+        row1.addWidget(self.ed_sm)
+        row1.addWidget(QLabel("ชื่อเรือ:"))
+        row1.addWidget(self.ed_lighter)     
+        
+        row1.addItem(QSpacerItem(20, 20, QSizePolicy.Expanding, QSizePolicy.Minimum))
+        root.addSpacing(-10)
+        
+        row1.addStretch()  # ✅ ป้องกันการขยาย
+        root.addLayout(row1)
+        
         # === แถวที่ 3: เวลาเริ่ม / เวลาสิ้นสุด ===
-        row3 = QHBoxLayout()
+        row2 = QHBoxLayout()
+        row2.setAlignment(Qt.AlignLeft)    
         self.t_start = setup_timeedit(QTimeEdit())
         self.t_start.setTime(QTime(8, 0))
-        self.t_start.setFixedWidth(100)
+        self.t_start.setFixedWidth(90)
 
         self.t_stop = setup_timeedit(QTimeEdit())
         self.t_stop.setTime(QTime(22, 0))
-        self.t_stop.setFixedWidth(100)
+        self.t_stop.setFixedWidth(90)
+        
+        self.ed_remark = QLineEdit()
+        self.ed_remark.setFixedWidth(475)
 
-        row3.addWidget(QLabel("เวลาเริ่ม:"))
-        row3.addWidget(self.t_start)
-        row3.addSpacing(30)
-        row3.addWidget(QLabel("เวลาสิ้นสุด:"))
-        row3.addWidget(self.t_stop)
-        row3.addStretch()
-        root.addLayout(row3)
-
-        # === แถวที่ 4: หมายเหตุ ===
-        row4 = QHBoxLayout()
-        self.ed_remark = QTextEdit()
-        self.ed_remark.setFixedHeight(60)
-        self.ed_remark.setFixedWidth(450)
-        row4.addWidget(QLabel("หมายเหตุ:"))
-        row4.addWidget(self.ed_remark)
-        row4.addStretch()
-        root.addLayout(row4)       
+        row2.addWidget(QLabel("เวลาเริ่ม:"))
+        row2.addWidget(self.t_start)
+        row2.addWidget(QLabel("เวลาสิ้นสุด:"))
+        row2.addWidget(self.t_stop)
+        row2.addWidget(QLabel("หมายเหตุ:"))
+        row2.addWidget(self.ed_remark)
+                
+        row2.addItem(QSpacerItem(20, 20, QSizePolicy.Expanding, QSizePolicy.Minimum))
+        root.addSpacing(-10)
+        
+        row2.addStretch()  # ✅ ป้องกันการขยาย
+        root.addLayout(row2)
 
         # === ตารางสินค้า ===
         lbl_items = QLabel("รายการสินค้า (รับเข้า)")
@@ -108,8 +113,9 @@ class MainForm(QWidget):
         self.btn_del_item.clicked.connect(self.delete_selected_item)
         row_btn_item.addWidget(self.btn_add_item)
         row_btn_item.addWidget(self.btn_del_item)
+        root.addSpacing(-10)
         root.addLayout(row_btn_item)
-
+        
         # === ปุ่ม CRUD ===
         row_btn = QHBoxLayout()
         self.btn_save = QPushButton("💾 บันทึกใหม่")
@@ -122,6 +128,7 @@ class MainForm(QWidget):
             b.setMinimumHeight(38)
             b.setFont(QFont("TH Sarabun New", 14, QFont.Bold))
             row_btn.addWidget(b)
+        root.addSpacing(-10)
         root.addLayout(row_btn)
 
         # === ตารางแสดงข้อมูลหลัก ===
@@ -164,12 +171,21 @@ class MainForm(QWidget):
         self.tbl_items.setItem(row, 1, QTableWidgetItem("0"))
         self.tbl_items.setItem(row, 2, QTableWidgetItem("0"))
 
+    def load_product_list(self):
+        """โหลดรายการสินค้า (ชื่อสินค้า) จากตาราง WH1_Products"""
+        try:
+            return get_products()
+        except Exception as e:
+            QMessageBox.warning(self, "Error", f"ไม่สามารถโหลดรายการสินค้าได้\n{e}")
+            return []
+
     def add_new_product(self):
-        text, ok = QInputDialog.getText(self, "เพิ่มสินค้าใหม่", "ชื่อสินค้า:")
+        """เพิ่มสินค้าใหม่เข้า WH1_Products"""
+        text, ok = QInputDialog.getText(self, "เพิ่มสินค้าใหม่", "ชื่อสินค้าใหม่:")
         if ok and text.strip():
             add_product(text.strip())
             QMessageBox.information(self, "สำเร็จ", f"เพิ่มสินค้าใหม่: {text.strip()}")
-
+            
     def delete_selected_item(self):
         row = self.tbl_items.currentRow()
         if row >= 0:
@@ -190,68 +206,48 @@ class MainForm(QWidget):
         self.tbl_items.setRowCount(0)
 
     def load_table(self):
+        """โหลดเฉพาะหัวเอกสาร"""
         self.table.setRowCount(0)
-        rows = list_records()
+        rows = list_headers()
         for r in rows:
             i = self.table.rowCount()
             self.table.insertRow(i)
-            for c, k in enumerate(["WH1_id", "WH1_date", "WH1_SM", "WH1_lighter", "WH1_start", "WH1_stop", "WH1_remark"]):
-                self.table.setItem(i, c, QTableWidgetItem("" if r[k] is None else str(r[k])))
+            vals = [
+                str(r.get("WH1_id")),
+                str(r.get("WH1_date")),
+                str(r.get("WH1_SM")),
+                str(r.get("WH1_lighter")),
+                str(r.get("WH1_start") or ""),
+                str(r.get("WH1_stop") or ""),
+                str(r.get("WH1_remark") or "")
+            ]
+            for c, v in enumerate(vals):
+                self.table.setItem(i, c, QTableWidgetItem(v))
+
 
     def on_row_clicked(self, row, _):
-        """โหลดข้อมูลจากแถวที่เลือกขึ้นฟอร์ม"""
+        """เมื่อคลิกแถวหัวเอกสาร โหลดสินค้าของเอกสารนั้น"""
         self.current_id = int(self.table.item(row, 0).text())
-        self.ed_id.setText(str(self.current_id))
 
-        # วันที่
-        date_text = self.table.item(row, 1).text()
-        if date_text:
-            try:
-                qdate = QDate.fromString(date_text, "yyyy-MM-dd")
-                if not qdate.isValid():
-                    qdate = QDate.fromString(date_text, "dd/MM/yyyy")
-                self.d_date.setDate(qdate)
-            except Exception:
-                pass
-
-        # ชุดเรือ / ชื่อเรือ
+        # ✅ โหลดหัวกลับไปยังฟอร์ม
+        self.d_date.setDate(QDate.fromString(self.table.item(row, 1).text(), "yyyy-MM-dd"))
         self.ed_sm.setText(self.table.item(row, 2).text())
         self.ed_lighter.setText(self.table.item(row, 3).text())
+        self.t_start.setTime(QTime.fromString(self.table.item(row, 4).text(), "HH:mm:ss"))
+        self.t_stop.setTime(QTime.fromString(self.table.item(row, 5).text(), "HH:mm:ss"))
+        self.ed_remark.setText(self.table.item(row, 6).text())
 
-        # เวลาเริ่ม
-        start_text = self.table.item(row, 4).text()
-        if start_text:
-            try:
-                qtime = QTime.fromString(start_text.strip(), "HH:mm:ss")
-                if not qtime.isValid():
-                    qtime = QTime.fromString(start_text.strip(), "HH:mm")
-                self.t_start.setTime(qtime)
-            except Exception:
-                pass
-
-        # เวลาสิ้นสุด
-        stop_text = self.table.item(row, 5).text()
-        if stop_text:
-            try:
-                qtime = QTime.fromString(stop_text.strip(), "HH:mm:ss")
-                if not qtime.isValid():
-                    qtime = QTime.fromString(stop_text.strip(), "HH:mm")
-                self.t_stop.setTime(qtime)
-            except Exception:
-                pass
-
-        # หมายเหตุ
-        self.ed_remark.setPlainText(self.table.item(row, 6).text())
-
-        # โหลดรายการสินค้า
+        # ✅ โหลดสินค้าของเอกสารนี้
         self.tbl_items.setRowCount(0)
-        for it in list_item_records(self.current_id):
+        items = list_item_records(self.current_id)
+        for it in items:
             r = self.tbl_items.rowCount()
             self.tbl_items.insertRow(r)
-            cb = QComboBox()
-            cb.addItems(get_products())
-            cb.setCurrentText(it["product_name"])
 
+            # คอลัมน์สินค้า
+            cb = QComboBox()
+            cb.addItems(self.load_product_list())
+            cb.setCurrentText(it["product_name"])
             btn_add = QPushButton("➕")
             btn_add.setFixedWidth(35)
             btn_add.clicked.connect(self.add_new_product)
@@ -263,6 +259,7 @@ class MainForm(QWidget):
             layout.addWidget(btn_add)
             self.tbl_items.setCellWidget(r, 0, cell_widget)
 
+            # คอลัมน์จำนวน
             self.tbl_items.setItem(r, 1, QTableWidgetItem(str(it["qty_bag"])))
             self.tbl_items.setItem(r, 2, QTableWidgetItem(str(it["qty_ton"])))
 
@@ -273,10 +270,11 @@ class MainForm(QWidget):
             "WH1_lighter": self.ed_lighter.text(),
             "WH1_start": self.t_start.time().toPyTime(),
             "WH1_stop": self.t_stop.time().toPyTime(),
-            "WH1_remark": self.ed_remark.toPlainText(),
+            "WH1_remark": self.ed_remark.text(),
         }
         new_id = create_record(header)
 
+        # ✅ เพิ่มสินค้า
         for r in range(self.tbl_items.rowCount()):
             cell_widget = self.tbl_items.cellWidget(r, 0)
             cb = cell_widget.findChild(QComboBox)
@@ -289,6 +287,7 @@ class MainForm(QWidget):
         self.load_table()
         self.clear_form()
 
+
     def on_update(self):
         if not self.current_id:
             QMessageBox.warning(self, "เตือน", "กรุณาเลือกข้อมูลก่อนแก้ไข")
@@ -300,17 +299,15 @@ class MainForm(QWidget):
             "WH1_lighter": self.ed_lighter.text(),
             "WH1_start": self.t_start.time().toPyTime(),
             "WH1_stop": self.t_stop.time().toPyTime(),
-            "WH1_remark": self.ed_remark.toPlainText(),
+            "WH1_remark": self.ed_remark.text(),
         }
 
         # ✅ อัปเดตหัวเอกสาร
         update_record(self.current_id, header)
 
-        # ✅ ลบรายการสินค้าเก่าทั้งหมดก่อน
-        from db import delete_items_by_header
+        # ✅ ลบสินค้าเก่าก่อน แล้วเพิ่มใหม่
         delete_items_by_header(self.current_id)
 
-        # ✅ เพิ่มรายการสินค้าใหม่จากตาราง
         for r in range(self.tbl_items.rowCount()):
             cell_widget = self.tbl_items.cellWidget(r, 0)
             cb = cell_widget.findChild(QComboBox)
@@ -321,6 +318,7 @@ class MainForm(QWidget):
 
         QMessageBox.information(self, "สำเร็จ", "อัปเดตข้อมูลเรียบร้อย ✅")
         self.load_table()
+
 
 
     def on_delete(self):
