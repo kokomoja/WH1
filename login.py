@@ -1,38 +1,47 @@
 from PyQt5.QtWidgets import QDialog, QVBoxLayout, QLabel, QLineEdit, QCheckBox, QPushButton, QHBoxLayout, QMessageBox
+from PyQt5.QtGui import QFont
 from db import auth_user
 
 class LoginDialog(QDialog):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("FM-OP-01 | Login")
-        self.resize(350, 200)
-        layout = QVBoxLayout(self)
+        self.setObjectName("LoginDialog")
+        self.resize(360, 220)
 
-        layout.addWidget(QLabel("Username"))
+        layout = QVBoxLayout(self)
+        lbl_user = QLabel("Username")
+        lbl_user.setFont(QFont("THSarabunNew-Bold", 22))
+        layout.addWidget(lbl_user)
         self.ed_user = QLineEdit()
+        self.ed_user.setFont(QFont("THSarabunNew", 22))
         layout.addWidget(self.ed_user)
 
-        layout.addWidget(QLabel("Password"))
+        lbl_pass = QLabel("Password")
+        lbl_pass.setFont(QFont("THSarabunNew-Bold", 22))
+        layout.addWidget(lbl_pass)
         self.ed_pass = QLineEdit()
         self.ed_pass.setEchoMode(QLineEdit.Password)
+        self.ed_pass.setFont(QFont("THSarabunNew", 22))
         layout.addWidget(self.ed_pass)
 
-        self.ed_user.setText("1")
-        self.ed_pass.setText("1")
-        
         self.cb_show = QCheckBox("แสดงรหัสผ่าน")
         self.cb_show.stateChanged.connect(self.toggle_password)
         layout.addWidget(self.cb_show)
 
         row = QHBoxLayout()
         btn_ok = QPushButton("เข้าสู่ระบบ")
+        btn_ok.setObjectName("primary")
+        btn_ok.setFixedSize(200, 50) 
         btn_cancel = QPushButton("ยกเลิก")
-        row.addWidget(btn_ok)
-        row.addWidget(btn_cancel)
-        layout.addLayout(row)
+        btn_cancel.setObjectName("primary")
+        btn_cancel.setFixedSize(200, 50) 
 
         btn_ok.clicked.connect(self.check_login)
         btn_cancel.clicked.connect(self.reject)
+        row.addWidget(btn_ok)
+        row.addWidget(btn_cancel)
+        layout.addLayout(row)
 
         self.username = None
 

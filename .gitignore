@@ -1,4 +1,19 @@
-node_modules/ 
-dist/ 
-*.exe 
-*.asar 
+# Python
+__pycache__/
+*.pyc
+.env
+
+# Build/Dist
+build/
+dist/
+*.spec
+
+# OS
+.DS_Store
+
+# Binaries
+*.exe
+*.asar
+
+# Node (เผื่อมีโฟลเดอร์ทดสอบ)
+node_modules/

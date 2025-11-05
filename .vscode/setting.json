@@ -1,0 +1,24 @@
+{
+  "editor.formatOnSave": true,
+
+  "editor.formatOnSaveMode": "file",
+
+  "files.autoSave": "afterDelay",
+
+  "python.languageServer": "Pylance",
+  "python.analysis.autoImportCompletions": true,
+
+  "python.formatting.provider": "none",
+  "[python]": {
+    "editor.defaultFormatter": "ms-python.black-formatter"
+  },
+  "black-formatter.args": ["--line-length", "88"],
+
+  "[html]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  "[json]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+
+  "files.autoSaveDelay": 1000,
+  "css.styleSheets": [
+    "https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+  ]
+}

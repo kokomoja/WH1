@@ -3,8 +3,9 @@ git init
 git remote remove origin
 git remote add origin https://github.com/kokomoja/WH1.git
 git add .
-git commit -m "commit for WH1"
+git commit -m "Clean code WH1_Project: structure+utils+env"
 git branch -M main
 git push -u origin main --force
 
-python login.py
+# รันโปรแกรม
+python app.py

@@ -1,5 +1,6 @@
 import pyodbc
-from datetime import date, time
+from datetime import date
+from utils import info, warn
 
 # ----------------------------------------
 # 🔗 การเชื่อมต่อ SQL Server
@@ -244,3 +245,56 @@ def delete_items_by_header(wh1_id):
     conn.commit()
     conn.close()
 
+def get_latest_revision():
+    """ดึงข้อมูลล่าสุดจาก WH1_Revision (id มากสุด)"""
+    with get_connection() as conn:
+        cur = conn.cursor()
+        cur.execute("""
+            SELECT TOP 1 wh1rev_code, wh1rev_rev, wh1rev_eff
+            FROM WH1_Revision
+            ORDER BY wh1rev_id DESC
+        """)
+        row = cur.fetchone()
+        if row:
+            return {
+                "wh1rev_code": row[0],
+                "wh1rev_rev": row[1],
+                "wh1rev_eff": str(row[2])
+            }
+        else:
+            return None
+
+def list_revisions():
+    """อ่านข้อมูลทั้งหมดจาก WH1_Revision"""
+    with get_connection() as conn:
+        cur = conn.cursor()
+        cur.execute("SELECT wh1rev_id, wh1rev_code, wh1rev_rev, wh1rev_eff FROM WH1_Revision ORDER BY wh1rev_id DESC")
+        columns = [col[0] for col in cur.description]
+        return [dict(zip(columns, row)) for row in cur.fetchall()]
+
+def insert_revision(code, rev, eff_date):
+    """เพิ่มข้อมูลใหม่"""
+    with get_connection() as conn:
+        cur = conn.cursor()
+        cur.execute(
+            "INSERT INTO WH1_Revision (wh1rev_code, wh1rev_rev, wh1rev_eff) VALUES (?, ?, ?)",
+            (code, rev, eff_date)
+        )
+        conn.commit()
+
+def update_revision(rev_id, code, rev, eff_date):
+    """แก้ไขข้อมูล"""
+    with get_connection() as conn:
+        cur = conn.cursor()
+        cur.execute(
+            "UPDATE WH1_Revision SET wh1rev_code=?, wh1rev_rev=?, wh1rev_eff=? WHERE wh1rev_id=?",
+            (code, rev, eff_date, rev_id)
+        )
+        conn.commit()
+
+def delete_revision(rev_id):
+    """ลบข้อมูล"""
+    with get_connection() as conn:
+        cur = conn.cursor()
+        cur.execute("DELETE FROM WH1_Revision WHERE wh1rev_id=?", (rev_id,))
+        conn.commit()

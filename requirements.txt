@@ -1,3 +1,5 @@
 PyQt5==5.15.11
 pyodbc>=4.0.39
 openpyxl>=3.1.2
+reportlab>=4.2.5
+python-dotenv>=1.0.1

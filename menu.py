@@ -11,60 +11,54 @@ class MenuWindow(QMainWindow):
         self.resize(800, 500)
         self.username = username
 
-        # --- Layout ---
         central = QWidget()
         layout = QVBoxLayout(central)
+        layout.setSpacing(20)
+        layout.setContentsMargins(40, 30, 40, 30)
         self.setCentralWidget(central)
 
-        # ข้อความต้อนรับ
         lbl = QLabel(f"👋 ยินดีต้อนรับ: {username}")
-        lbl.setFont(QFont("TH Sarabun New", 18, QFont.Bold))
-        lbl.setStyleSheet("margin:10px;")
+        lbl.setFont(QFont("THSarabunNew-Bold", 32))
+        lbl.setStyleSheet("margin-bottom:20px;")
         layout.addWidget(lbl)
 
-        # ปุ่มเปิดหน้าฟอร์ม CRUD
-        btn_main = QPushButton("📋 บันทึก/แก้ไขข้อมูล (FM-OP-01)")
-        btn_main.clicked.connect(self.open_main_form)
-        layout.addWidget(btn_main)
+        buttons = [
+            ("📋 บันทึก/แก้ไขข้อมูล (FM-OP-01)", self.open_main_form),
+            ("📊 รายงาน / ค้นหา / Export Excel/PDF", self.open_report),
+            ("🧾 เพิ่มการแก้ไขหมายเลขเอกสาร", self.open_edit_docno),
+            ("🚪 ออกจากระบบ", self.logout),
+        ]
 
-        # ปุ่มเปิดรายงาน
-        btn_report = QPushButton("📊 รายงาน / ค้นหา / Export Excel")
-        btn_report.clicked.connect(self.open_report)
-        layout.addWidget(btn_report)
-
-        # ปุ่มออกจากระบบ
-        btn_logout = QPushButton("🚪 ออกจากระบบ")
-        btn_logout.setStyleSheet("background-color:#ff6666; color:white; font-weight:bold;")
-        btn_logout.clicked.connect(self.logout)
-        layout.addWidget(btn_logout)
-
-        # เก็บ reference กัน GC และใช้ reuse
-        self.main_window = None
-        self.report_window = None
+        for text, handler in buttons:
+            btn = QPushButton(text)
+            btn.setFont(QFont("THSarabunNew-Bold", 24))
+            btn.setMinimumHeight(60)
+            if "🚪" in text:
+                btn.setStyleSheet("background-color:#ff6666; color:white; font-weight:bold;")
+            btn.clicked.connect(handler)
+            layout.addWidget(btn)
 
     def bring_to_front(self, w):
-        # ดันหน้าต่างขึ้นหน้าและโฟกัส
         w.show()
         w.raise_()
         w.activateWindow()
 
     def open_main_form(self):
-        """เปิดฟอร์ม CRUD เป็นหน้าต่างแยก โดยไม่ปิด/ซ่อนเมนู"""
-        if self.main_window is None:
+        if not hasattr(self, 'main_window') or self.main_window is None:
             self.main_window = MainForm()
         self.bring_to_front(self.main_window)
 
     def open_report(self):
-        """เปิดหน้ารายงานเป็นหน้าต่างแยก โดยไม่ปิด/ซ่อนเมนู"""
-        if self.report_window is None:
-           self.report_window = WH1ReportForm()  # ไม่ส่ง parent
-        self.report_window.show()
+        if not hasattr(self, 'report_window') or self.report_window is None:
+            self.report_window = WH1ReportForm()
+        self.bring_to_front(self.report_window)
+
+    def open_edit_docno(self):
+        from edit_docno import EditDocNoWindow
+        self.edit_docno_window = EditDocNoWindow()
+        self.bring_to_front(self.edit_docno_window)
 
     def logout(self):
-        reply = QMessageBox.question(
-            self, "ยืนยันการออกจากระบบ",
-            "คุณต้องการออกจากระบบหรือไม่?",
-            QMessageBox.Yes | QMessageBox.No, QMessageBox.No
-        )
+        reply = QMessageBox.question(self, "ยืนยันการออกจากระบบ", "คุณต้องการออกจากระบบหรือไม่?", QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
         if reply == QMessageBox.Yes:
             QCoreApplication.quit()
