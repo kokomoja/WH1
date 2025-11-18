@@ -1,9 +1,9 @@
-cd C:\ProjectPCT\WH1_Project
+cd C:\PCTProject\WH1
 git init
 git remote remove origin
 git remote add origin https://github.com/kokomoja/WH1.git
 git add .
-git commit -m "Clean code WH1_Project: structure+utils+env"
+git commit -m "Clean code WH1"
 git branch -M main
 git push -u origin main --force
 

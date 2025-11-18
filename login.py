@@ -15,6 +15,7 @@ class LoginDialog(QDialog):
         layout.addWidget(lbl_user)
         self.ed_user = QLineEdit()
         self.ed_user.setFont(QFont("THSarabunNew", 22))
+        self.ed_user.setText("1")  # ✅ ใส่ค่าเริ่มต้น
         layout.addWidget(self.ed_user)
 
         lbl_pass = QLabel("Password")
@@ -23,6 +24,7 @@ class LoginDialog(QDialog):
         self.ed_pass = QLineEdit()
         self.ed_pass.setEchoMode(QLineEdit.Password)
         self.ed_pass.setFont(QFont("THSarabunNew", 22))
+        self.ed_pass.setText("1")  # ✅ ใส่ค่าเริ่มต้น
         layout.addWidget(self.ed_pass)
 
         self.cb_show = QCheckBox("แสดงรหัสผ่าน")

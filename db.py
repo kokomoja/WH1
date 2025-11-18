@@ -298,3 +298,31 @@ def delete_revision(rev_id):
         cur = conn.cursor()
         cur.execute("DELETE FROM WH1_Revision WHERE wh1rev_id=?", (rev_id,))
         conn.commit()
+
+
+def get_tanks():
+    """ดึงรายการหมายเลขถังน้ำมันจาก WH1_Tanks"""
+    conn = get_connection()
+    cur = conn.cursor()
+    try:
+        cur.execute("SELECT tank_no FROM WH1_Tanks ORDER BY tank_no ASC")
+        rows = [r[0] for r in cur.fetchall()]
+    except Exception as e:
+        print("⚠️ ไม่สามารถอ่านข้อมูลถังน้ำมันได้:", e)
+        rows = []
+    conn.close()
+    return rows
+
+def get_machines():
+    """ดึงรายชื่อเครื่องจักร/รถบรรทุกจาก WH1_Machines"""
+    conn = get_connection()
+    cur = conn.cursor()
+    try:
+        cur.execute("SELECT machine_name FROM WH1_Machines ORDER BY machine_name ASC")
+        rows = [r[0] for r in cur.fetchall()]
+    except Exception as e:
+        print("⚠️ ไม่สามารถอ่านข้อมูลเครื่องจักรได้:", e)
+        rows = []
+    conn.close()
+    return rows
+

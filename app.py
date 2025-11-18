@@ -4,7 +4,11 @@ from PyQt5.QtGui import QFontDatabase, QFont
 from login import LoginDialog
 from menu import MenuWindow
 from config import FONTS, APP_STYLESHEET
+from intermediate import IntermediateDialog
+from PyQt5.QtCore import Qt, QCoreApplication
 
+QCoreApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True)
+QCoreApplication.setAttribute(Qt.AA_UseHighDpiPixmaps, True)
 logging.basicConfig(level=logging.INFO)
 
 
@@ -39,12 +43,6 @@ def main():
                 font-family: '%s';
                 font-size: 20px;
             }
-            QMessageBox QPushButton, QDialog QPushButton {
-                font-size: 12px;
-                padding: 4px 12px;
-                border: 1px solid #bdbdbd;
-                border-radius: 5px;
-            }
             QMessageBox QPushButton:hover, QDialog QPushButton:hover {
                 background-color: #f0f0f0;
             }
@@ -72,10 +70,9 @@ def main():
     # 🔐 เปิดหน้าล็อกอิน
     login = LoginDialog()
     if login.exec_() == login.Accepted:
-        mw = MenuWindow(login.username or "user")
-        mw.show()
+        inter = IntermediateDialog(login.username)
+        inter.show()           # ✅ ใช้ show() แทน exec_()
         sys.exit(app.exec_())
-
 
 if __name__ == "__main__":
     main()

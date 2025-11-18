@@ -1,7 +1,7 @@
 from PyQt5.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QLabel, QPushButton, QMessageBox
 from PyQt5.QtGui import QFont
 from PyQt5.QtCore import QCoreApplication
-from main import MainForm
+from fmop01 import MainForm
 from wh1_report import WH1ReportForm
 
 class MenuWindow(QMainWindow):
@@ -26,7 +26,7 @@ class MenuWindow(QMainWindow):
             ("📋 บันทึก/แก้ไขข้อมูล (FM-OP-01)", self.open_main_form),
             ("📊 รายงาน / ค้นหา / Export Excel/PDF", self.open_report),
             ("🧾 เพิ่มการแก้ไขหมายเลขเอกสาร", self.open_edit_docno),
-            ("🚪 ออกจากระบบ", self.logout),
+            ("🚪 ออกจากโปรแกรม", self.close_window),
         ]
 
         for text, handler in buttons:
@@ -58,7 +58,16 @@ class MenuWindow(QMainWindow):
         self.edit_docno_window = EditDocNoWindow()
         self.bring_to_front(self.edit_docno_window)
 
-    def logout(self):
-        reply = QMessageBox.question(self, "ยืนยันการออกจากระบบ", "คุณต้องการออกจากระบบหรือไม่?", QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
-        if reply == QMessageBox.Yes:
-            QCoreApplication.quit()
+#    def logout(self):
+#        reply = QMessageBox.question(self, "ยืนยันการออกจากระบบ", "คุณต้องการออกจากระบบหรือไม่?", QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+#        if reply == QMessageBox.Yes:
+#            QCoreApplication.quit()
+            
+    def get_menu_button_font(self):
+        """ส่งคืนฟอนต์ของปุ่มในหน้าเมนูหลัก"""
+        sample_btn = self.findChildren(QPushButton)[0]
+        return sample_btn.font()
+    
+    def close_window(self):
+        """ปิดเฉพาะหน้าต่างเมนูหลัก"""
+        self.close()
